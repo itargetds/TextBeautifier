@@ -21,7 +21,7 @@ An easy way to make your server perfect
 
 Why go to third-party services to convert text to popular fonts or create a gradient? 
 
-Today, you can do it right on your MineCraft server (with the PlaceholderAPI plugin) !
+Today, you can do it right on your MineCraft server ([with the PlaceholderAPI plugin](https://placeholderapi.com/)) !
 
 Benefits of using TextBeautifier expansion:
 
@@ -48,7 +48,7 @@ Thank you for your attention, enjoy your use.
 
 **Colors**: *black, darkblue, darkgreen, darkaqua, darkred, purple, gold, gray, darkgray, blue, green, aqua, red, pink, yellow, white*
 
-**Specials**: *hex-#your hex, gradient-#your hex1-#your hex2*
+**Specials**: *hex-#your hex, gradient-#your hex1-#your hex2-#your hex3-#your hex4 etc...*
 
 **Examples**: 
 
@@ -80,14 +80,27 @@ Thank you for your attention, enjoy your use.
 
 
 
-## Combination
+## Placeholder
+*(needs appropriate extensions)*
 
- - %textbeautifier_style+font_anystyles+any font_your text%
+ - %textbeautifier_placeholder__{your_placeholder}%
 
 **Examples**: 
 
-* *%textbeautifier_style+font_red+bold+underline+italic+fancy_Hello World!%*
+* *%textbeautifier_placeholder__{server_name}%*
 
-* *%textbeautifier_style+font_gradient-#343543-#832563+bold+underline+italic+fancy_Hello World!%*
+* *%textbeautifier_placeholder__{player_name}%*
 
-* %textbeautifier_style+font_hex-#343543+bold+underline+italic+fancy_Hello World!%
+
+
+## Combination
+
+ - %textbeautifier_style+font+placeholder_anystyles+any font_your text%
+
+**Examples**: 
+
+* *%textbeautifier_style+font+placeholder_red+bold+underline+italic+fancy_Hello {player_name}!%*
+
+* *%textbeautifier_style+font+placeholder_gradient-#343543-#832563+bold+underline+italic+fancy_Hello {player_name}!%*
+
+* %textbeautifier_style+font+placeholder_hex-#343543+bold+underline+italic+fancy_Hello {player_name}!%
