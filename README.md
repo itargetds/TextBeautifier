@@ -21,7 +21,7 @@ An easy way to make your server perfect
 
 Why go to third-party services to convert text to popular fonts or create a gradient? 
 
-Today, you can do it right on your MineCraft server ([with the PlaceholderAPI plugin](https://placeholderapi.com/)) !
+Today, you can do it right on your Minecraft server ([with the PlaceholderAPI plugin](https://placeholderapi.com/)) !
 
 Benefits of using TextBeautifier expansion:
 
@@ -30,7 +30,7 @@ Benefits of using TextBeautifier expansion:
 - Our expansion is optimized and should not load your server!
 - Easy To Use :D
 
-If you find a bug or any error (sorry), you should report it on the [Official Discord Server PlaceholderAPI](https://discord.gg/helpchat).
+If you find a bug or any error (sorry), please create a [new issue](https://github.com/itargetds/TextBeautifier/issues).
 
 Thank you for your attention, enjoy your use.
 # Usage
