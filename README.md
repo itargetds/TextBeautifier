@@ -81,7 +81,7 @@ Thank you for your attention, enjoy your use.
 
 
 ## Placeholder
-*(needs appropriate extensions)*
+*(needs appropriate expansions)*
 
  - %textbeautifier_placeholder__{your_placeholder}%
 
