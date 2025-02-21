@@ -1,5 +1,6 @@
 package me.itargetds.textbeautifier;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -10,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class TextBeautifier extends PlaceholderExpansion {
 
@@ -28,7 +28,7 @@ public final class TextBeautifier extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.3";
+        return "1.4";
     }
 
     @Override
@@ -38,17 +38,21 @@ public final class TextBeautifier extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        String[] arguments = params.split("_");
-        if(arguments.length >= 3) {
+        String[] arguments = params.split("_", 3);
+        if(arguments.length >= 2) {
             String type = arguments[0];
             String subtypes = arguments[1];
-            String text = Arrays.stream(arguments).skip(2).collect(Collectors.joining("_"));
+            String text = arguments.length > 2 ? arguments[2] : "";
             return formatText(player, type, subtypes, text);
         }
         return null;
     }
 
     public static String formatText(Player player, String type, String subtypes, String text) {
+        if(text == null){
+            return null;
+        }
+
         List<String> types = Arrays.asList(type.toLowerCase().split("\\+"));
         String formattedText = text;
 
@@ -58,8 +62,9 @@ public final class TextBeautifier extends PlaceholderExpansion {
         }
 
         if(types.contains("placeholder")){
-            formattedText = PlaceholderUtils.replacePlaceholders(player, formattedText);
+            formattedText = PlaceholderAPI.setBracketPlaceholders(player, formattedText);
         }
+
         if (types.contains("style") && types.contains("font")){
             formattedText = FontUtils.applyFont(formattedText, subtypes);
             formattedText = StyleUtils.applyStyles(formattedText, subtypes);
