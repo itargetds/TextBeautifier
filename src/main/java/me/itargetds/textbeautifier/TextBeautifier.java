@@ -28,7 +28,7 @@ public final class TextBeautifier extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.4";
+        return "1.5";
     }
 
     @Override
@@ -49,35 +49,27 @@ public final class TextBeautifier extends PlaceholderExpansion {
     }
 
     public static String formatText(Player player, String type, String subtypes, String text) {
-        if(text == null){
-            return null;
-        }
+        if (text == null) return null;
+
+        String cacheKey = type + ":" + subtypes + ":" + text;
+        if (cache.containsKey(cacheKey)) return cache.get(cacheKey);
 
         List<String> types = Arrays.asList(type.toLowerCase().split("\\+"));
         String formattedText = text;
 
-        String cacheKey = type + ":" + subtypes + ":" + text;
-        if (cache.containsKey(cacheKey)) {
-            return cache.get(cacheKey);
-        }
-
-        if(types.contains("placeholder")){
+        if (types.contains("placeholder")) {
             formattedText = PlaceholderAPI.setBracketPlaceholders(player, formattedText);
         }
 
-        if (types.contains("style") && types.contains("font")){
-            formattedText = FontUtils.applyFont(formattedText, subtypes);
-            formattedText = StyleUtils.applyStyles(formattedText, subtypes);
-        }
-        else if (types.contains("font")) {
-            formattedText = FontUtils.applyFont(formattedText, subtypes);
-        }
-        else if (types.contains("style")) {
-            formattedText = StyleUtils.applyStyles(formattedText, subtypes);
-        }
+        boolean hasFont = types.contains("font");
+        boolean hasStyle = types.contains("style");
 
+        if (hasFont) formattedText = FontUtils.applyFont(formattedText, subtypes);
+        if (hasStyle) formattedText = StyleUtils.applyStyles(formattedText, subtypes);
+
+        formattedText = ChatColor.RESET + formattedText + ChatColor.RESET;
         cache.put(cacheKey, formattedText);
 
-        return ChatColor.RESET + formattedText + ChatColor.RESET;
+        return formattedText;
     }
 }

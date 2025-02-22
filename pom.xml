@@ -6,7 +6,7 @@
 
     <groupId>me.itargetds.textbeautifier</groupId>
     <artifactId>TextBeautifier</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>TextBeautifier</name>
@@ -34,21 +34,6 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>net.md_5.bungee.api</pattern>
-                                    <shadedPattern>net.md_5.bungeecord.api</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.md_5.bungee.chat</pattern>
-                                    <shadedPattern>net.md_5.bungeecord.chat</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

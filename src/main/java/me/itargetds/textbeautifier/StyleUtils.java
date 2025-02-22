@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,78 +14,44 @@ public class StyleUtils {
     private static final boolean IS_MODERN_VERSION = checkVersion();
 
     public static String applyStyles(String text, String styles) {
-        if (text == null || styles == null || text.isEmpty()) {
-            return text;
-        }
+        if (text == null || styles == null || text.isEmpty()) return text;
 
         List<String> styleList = new ArrayList<>(Arrays.asList(styles.toLowerCase().split("\\+")));
-        StringBuilder formattedText = new StringBuilder();
-        ChatColor color = null;
-
+        String formattedText = extractColor(styleList, text);
         for (String style : styleList) {
-            if (style.startsWith("hex-")) {
-                if (IS_MODERN_VERSION) {
-                    String hexCode = style.substring(4);
-                    if (isValidHex(hexCode)) {
-                        color = ChatColor.of(hexCode);
-                    } else {
-                        color = ChatColor.WHITE;
-                    }
-                } else {
-                    color = ChatColor.WHITE;
+            formattedText += getStyleCode(style);
+        }
+
+        return formattedText;
+    }
+
+    private static String extractColor(List<String> styleList, String text) {
+        for (Iterator<String> iterator = styleList.iterator(); iterator.hasNext(); ) {
+            String style = iterator.next();
+            if (style.startsWith("gradient-") && IS_MODERN_VERSION) {
+                String[] gradientColors = style.substring(9).split("-");
+                if (gradientColors.length >= 2 && Arrays.stream(gradientColors).allMatch(StyleUtils::isValidHex)) {
+                    iterator.remove();
+                    return applyGradient(text, gradientColors, styleList);
                 }
-            } else if (style.startsWith("gradient-")) {
-                if (IS_MODERN_VERSION) {
-                    String[] gradientParts = style.substring(9).split("-");
-                    if (gradientParts.length >= 2 && Arrays.stream(gradientParts).allMatch(StyleUtils::isValidHex)) {
-                        return applyGradient(text, gradientParts, styleList.subList(1, styleList.size()));
-                    } else {
-                        return ChatColor.WHITE + text;
-                    }
-                } else {
-                    return ChatColor.WHITE + text;
+            } else if (style.startsWith("hex-") && IS_MODERN_VERSION) {
+                String hexCode = style.substring(4);
+                if (isValidHex(hexCode)) {
+                    iterator.remove();
+                    return ChatColor.of(hexCode) + text;
                 }
             } else {
-                switch (style.toLowerCase()) {
-                    case "black": color = ChatColor.getByChar('0'); break;
-                    case "darkblue": color = ChatColor.getByChar('1'); break;
-                    case "darkgreen": color = ChatColor.getByChar('2'); break;
-                    case "darkaqua": color = ChatColor.getByChar('3'); break;
-                    case "darkred": color = ChatColor.getByChar('4'); break;
-                    case "purple": color = ChatColor.getByChar('5'); break;
-                    case "gold": color = ChatColor.getByChar('6'); break;
-                    case "gray": color = ChatColor.getByChar('7'); break;
-                    case "darkgray": color = ChatColor.getByChar('8'); break;
-                    case "blue": color = ChatColor.getByChar('9'); break;
-                    case "green": color = ChatColor.getByChar('a'); break;
-                    case "aqua": color = ChatColor.getByChar('b'); break;
-                    case "red": color = ChatColor.getByChar('c'); break;
-                    case "pink": color = ChatColor.getByChar('d'); break;
-                    case "yellow": color = ChatColor.getByChar('e'); break;
-                    case "white": color = ChatColor.getByChar('f'); break;
+                ChatColor color = getColorCode(style);
+                if (color != null) {
+                    iterator.remove();
+                    return color + text;
                 }
             }
-
-            if (color != null) {
-                formattedText.append(color);
-                styleList.remove(style);
-                break;
-            }
         }
-
-        for (String style : styleList) {
-            formattedText.append(getStyleCode(style));
-        }
-
-        formattedText.append(text);
-        return formattedText.toString();
+        return ChatColor.WHITE + text;
     }
 
     private static String applyGradient(String text, String[] colors, List<String> extraStyles) {
-        if (!IS_MODERN_VERSION) {
-            return ChatColor.WHITE + text;
-        }
-
         StringBuilder gradientText = new StringBuilder();
         int length = text.length();
         List<Color> colorList = Arrays.stream(colors).map(Color::decode).collect(Collectors.toList());
@@ -94,7 +61,6 @@ public class StyleUtils {
             int index = (int) (ratio * (colorList.size() - 1));
             Color start = colorList.get(index);
             Color end = colorList.get(Math.min(index + 1, colorList.size() - 1));
-
             float localRatio = (ratio * (colorList.size() - 1)) - index;
             int r = (int) (start.getRed() + localRatio * (end.getRed() - start.getRed()));
             int g = (int) (start.getGreen() + localRatio * (end.getGreen() - start.getGreen()));
@@ -125,14 +91,34 @@ public class StyleUtils {
         }
     }
 
+    private static ChatColor getColorCode(String style) {
+        switch (style.toLowerCase()) {
+            case "black": return ChatColor.getByChar('0');
+            case "darkblue": return ChatColor.getByChar('1');
+            case "darkgreen": return ChatColor.getByChar('2');
+            case "darkaqua": return ChatColor.getByChar('3');
+            case "darkred": return ChatColor.getByChar('4');
+            case "purple": return ChatColor.getByChar('5');
+            case "gold": return ChatColor.getByChar('6');
+            case "gray": return ChatColor.getByChar('7');
+            case "darkgray": return ChatColor.getByChar('8');
+            case "blue": return ChatColor.getByChar('9');
+            case "green": return ChatColor.getByChar('a');
+            case "aqua": return ChatColor.getByChar('b');
+            case "red": return ChatColor.getByChar('c');
+            case "pink": return ChatColor.getByChar('d');
+            case "yellow": return ChatColor.getByChar('e');
+            case "white": return ChatColor.getByChar('f');
+            default: return null;
+        }
+    }
+
     private static boolean isValidHex(String hex) {
         return hex.matches("#[0-9a-fA-F]{6}");
     }
 
     private static boolean checkVersion() {
-        String version = Bukkit.getBukkitVersion().split("-")[0];
-        String[] parts = version.split("\\.");
-        int major = Integer.parseInt(parts[1]);
-        return major >= 13;
+        String[] parts = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
+        return Integer.parseInt(parts[1]) >= 13;
     }
 }
