@@ -20,13 +20,13 @@ public class StyleUtils {
         }
 
         List<String> styleList = new ArrayList<>(Arrays.asList(styles.toLowerCase().split("\\+")));
-        String formattedText = extractColor(styleList, text);
+        StringBuilder formattedText = new StringBuilder();
 
         for (String style : styleList) {
-            formattedText += getStyleCode(style);
+            formattedText.append(getStyleCode(style));
         }
 
-        return formattedText;
+        return extractColor(styleList, formattedText + text);
     }
 
     private static String extractColor(List<String> styleList, String text) {

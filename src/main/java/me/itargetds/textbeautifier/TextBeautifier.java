@@ -34,7 +34,7 @@ public final class TextBeautifier extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "1.5";
+        return "1.6";
     }
 
     @Override
@@ -48,7 +48,7 @@ public final class TextBeautifier extends PlaceholderExpansion {
             IS_MODERN_VERSION = false;
             PlaceholderAPIPlugin.getInstance().getLogger().log(
                     Level.WARNING,
-                    "Your server is running on a version lower than 1.13. HEX colors and Gradient will not work!"
+                    "Your server is running on a version lower than 1.16. HEX colors and Gradient will not work!"
             );
         }
         return super.register();
@@ -73,7 +73,7 @@ public final class TextBeautifier extends PlaceholderExpansion {
 
         String cacheKey = type + ":" + subtypes + ":" + text;
         if (cache.containsKey(cacheKey)){
-            return cache.get(cacheKey);
+            return ChatColor.RESET + cache.get(cacheKey) + ChatColor.RESET;
         }
 
         List<String> types = Arrays.asList(type.toLowerCase().split("\\+"));

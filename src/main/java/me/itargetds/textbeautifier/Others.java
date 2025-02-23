@@ -18,6 +18,6 @@ public class Others {
 
     public static boolean isModernVersion() {
         String[] parts = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
-        return Integer.parseInt(parts[1]) >= 13;
+        return Integer.parseInt(parts[1]) >= 16;
     }
 }
