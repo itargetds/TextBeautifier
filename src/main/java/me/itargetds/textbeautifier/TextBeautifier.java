@@ -1,7 +1,10 @@
 package me.itargetds.textbeautifier;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.itargetds.textbeautifier.Font.FontUtils;
+import me.itargetds.textbeautifier.Style.StyleUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -11,10 +14,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+
+import static me.itargetds.textbeautifier.Others.*;
 
 public final class TextBeautifier extends PlaceholderExpansion {
 
-    private static final Map<String, String> cache = new HashMap<>();
+    public static final Map<String, String> cache = new HashMap<>();
 
     @Override
     public @NotNull String getIdentifier() {
@@ -37,6 +43,18 @@ public final class TextBeautifier extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean register() {
+        if(!isModernVersion()){
+            IS_MODERN_VERSION = false;
+            PlaceholderAPIPlugin.getInstance().getLogger().log(
+                    Level.WARNING,
+                    "Your server is running on a version lower than 1.13. HEX colors and Gradient will not work!"
+            );
+        }
+        return super.register();
+    }
+
+    @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
         String[] arguments = params.split("_", 3);
         if(arguments.length >= 2) {
@@ -49,10 +67,14 @@ public final class TextBeautifier extends PlaceholderExpansion {
     }
 
     public static String formatText(Player player, String type, String subtypes, String text) {
-        if (text == null) return null;
+        if (text == null){
+            return null;
+        }
 
         String cacheKey = type + ":" + subtypes + ":" + text;
-        if (cache.containsKey(cacheKey)) return cache.get(cacheKey);
+        if (cache.containsKey(cacheKey)){
+            return cache.get(cacheKey);
+        }
 
         List<String> types = Arrays.asList(type.toLowerCase().split("\\+"));
         String formattedText = text;
@@ -61,15 +83,16 @@ public final class TextBeautifier extends PlaceholderExpansion {
             formattedText = PlaceholderAPI.setBracketPlaceholders(player, formattedText);
         }
 
-        boolean hasFont = types.contains("font");
-        boolean hasStyle = types.contains("style");
+        if (types.contains("font")) {
+            formattedText = FontUtils.applyFont(formattedText, subtypes);
+        }
 
-        if (hasFont) formattedText = FontUtils.applyFont(formattedText, subtypes);
-        if (hasStyle) formattedText = StyleUtils.applyStyles(formattedText, subtypes);
+        if (types.contains("style")) {
+            formattedText = StyleUtils.applyStyles(formattedText, subtypes);
+        }
 
-        formattedText = ChatColor.RESET + formattedText + ChatColor.RESET;
         cache.put(cacheKey, formattedText);
 
-        return formattedText;
+        return ChatColor.RESET + formattedText + ChatColor.RESET;
     }
 }
