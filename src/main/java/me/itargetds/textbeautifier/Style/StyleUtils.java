@@ -22,15 +22,17 @@ public class StyleUtils {
         List<String> styleList = new ArrayList<>(Arrays.asList(styles.toLowerCase().split("\\+")));
         StringBuilder formattedText = new StringBuilder();
 
-        for (String style : styleList) {
-            formattedText.append(getStyleCode(style));
-        }
+        String colorizedText = extractColor(styleList, text);
 
-        return extractColor(styleList, formattedText + text);
+        formattedText.append(colorizedText);
+
+        return formattedText.toString();
     }
 
     private static String extractColor(List<String> styleList, String text) {
         Iterator<String> iterator = styleList.iterator();
+        StringBuilder formattedText = new StringBuilder();
+
         while (iterator.hasNext()) {
             String style = iterator.next();
 
@@ -44,17 +46,21 @@ public class StyleUtils {
                 String hexCode = style.substring(4);
                 if (isValidHex(hexCode)) {
                     iterator.remove();
-                    return ChatColor.of(hexCode) + text;
+                    formattedText.append(ChatColor.of(hexCode));
                 }
             } else {
                 ChatColor color = getColorCode(style);
                 if (color != null) {
                     iterator.remove();
-                    return color + text;
+                    formattedText.append(color);
+                    for (String extraStyle : styleList) {
+                        formattedText.append(getStyleCode(extraStyle));
+                    }
                 }
             }
         }
-        return ChatColor.WHITE + text;
+        formattedText.append(text);
+        return formattedText.toString();
     }
 
     static String applyGradient(String text, String[] colors, List<String> extraStyles) {
